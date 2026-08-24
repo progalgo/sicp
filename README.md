@@ -1,51 +1,57 @@
 # SICP EPUB
 
-A reproducible pipeline for deriving a semantic EPUB3 edition from the official MIT Press HTML distribution of *Structure and Interpretation of Computer Programs*.
+This project is building a modern EPUB3 edition of *Structure and Interpretation of Computer Programs* from the official MIT Press web text.
 
-## Status
+The goal is not to rewrite the book. We want a dependable chain from the published source to a readable, semantic EPUB, with enough evidence at every step to answer: “Where did this come from, and what changed?”
 
-The repository is currently at the bootstrap stage. No source archive, extracted source, intermediate representation, transformed HTML, or EPUB is checked into Git.
+## Where things stand
 
-Implementation is intentionally staged. The source snapshot will be acquired and fingerprinted before any parser or schema is written. The source-faithfulness contract and the IR coverage matrix must be reviewed before the IR v1 schema is frozen.
+The project foundation is in place. The next stage is to download and fingerprint the MIT Press archive, then inventory its HTML, links, anchors, and images. The XML intermediate representation will be designed from that inventory, not guessed in advance.
 
-## Source of record
+No downloaded source or generated book files belong in Git.
 
-The initial source of record is the official MIT Press archive:
+## Source and scope
 
-`https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip`
+The source of record is the [official MIT Press archive](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip). The initial edition includes the book under `full-text/book/` only. Assignments, instructor material, and other companion-site pages are outside the scope.
 
-The target edition is the book in the archive's `full-text/book/` tree. Companion-site assignments, instructor material, and other pages are outside the initial scope.
+MIT Press identifies the web text as licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/). Any distributed derivative must retain the required attribution and share-alike terms.
 
-The MIT Press companion site identifies the book text as licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-sa/4.0/). Any distribution of derived work must preserve the required attribution and share-alike terms. The project will record retrieval metadata and SHA-256 fingerprints for custody, but will not commit the downloaded archive or generated book artifacts.
+## How the pipeline will work
 
-## Design commitments
+1. Download the source archive and record its URL, retrieval details, and SHA-256 fingerprints.
+2. Inventory the HTML corpus before deciding how every construct maps into XML.
+3. Convert the book into a source-aware XML intermediate representation.
+4. Use one XSLT transformation to compare that representation with a normalized projection of the original text.
+5. Use a second XSLT transformation to produce semantic HTML5, one chapter per EPUB spine document.
+6. Package the HTML5 and original assets into EPUB3 and validate it with `epubcheck`.
 
-- Python is the implementation language and Pipenv manages dependencies.
-- This project intentionally does not use `pyproject.toml`.
-- Generated lock files are produced by Pipenv, never hand-authored.
-- The source-faithful IR is authoritative for v1 and preserves source filenames, anchors, assets, order, and unresolved anomalies.
-- The first EPUB uses original GIF assets unchanged. Each later GIF modernization category will be reviewed, tracked by a GitHub issue, and delivered by its own dedicated pull request.
-- No source text, captions, alt text, mathematical transcription, vector artwork, or metadata is guessed by an LLM.
-- Granular commits are created only after the corresponding stage passes its focused validation. After each such commit, work pauses for review.
+The first EPUB will use the original GIF files unchanged. After the inventory is reviewed, each GIF category will receive its own GitHub issue and its own dedicated pull request for any later SVG, MathML, or other modernization work. Original assets will remain preserved and traceable.
 
-## Development
+## Development setup
 
-Requires Python 3.14 and Pipenv.
+You need Python 3.14 and [Pipenv](https://pipenv.pypa.io/).
 
 ```powershell
-pipenv install --dev
-pipenv run python -m src.sicp_epub
+pipenv sync --dev
 pipenv run pytest
+pipenv run ruff check src tests
+pipenv run python -m src.sicp_epub
 ```
 
-The full acquisition, inventory, IR validation, audit, transformation, and EPUB commands will be documented here as each stage becomes executable. `epubcheck` will be an explicit external validation prerequisite when EPUB packaging is implemented.
+The commands for acquisition, inventory, transformation, and EPUB generation will be added here as those stages become available. `Pipfile.lock` is generated by Pipenv and must not be edited by hand.
 
-## Repository layout
+## Working agreements
+
+- Preserve the source faithfully. Apparent errors and ambiguities are flagged, not silently corrected.
+- Keep the source-faithful IR separate from future editorial changes.
+- Do not commit source downloads, generated IR, reports, transformed HTML, EPUBs, or other build output.
+
+## Repository map
 
 ```text
-Pipfile                 Pipenv dependency declarations
+Pipfile                 Pipenv dependencies
 src/sicp_epub/          Python implementation
-schema/                 Versioned IR schema (planned)
-xslt/                   The two required XSLT transformations (planned)
-tests/                  Focused automated tests
+tests/                  Automated tests
+schema/                 XML schema (planned)
+xslt/                   The two XSLT transformations (planned)
 ```
