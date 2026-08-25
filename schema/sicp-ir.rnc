@@ -1,0 +1,163 @@
+# Source-faithful SICP intermediate representation.
+# This compact syntax is authoritative; generated schema forms are disposable.
+
+default namespace = "https://progalgo.github.io/sicp/ir/1"
+namespace xml = "http://www.w3.org/XML/1998/namespace"
+datatypes xsd = "http://www.w3.org/2001/XMLSchema-datatypes"
+
+start = book
+
+common =
+  attribute xml:id { xsd:NMTOKEN },
+  attribute source-ref { text }?,
+  attribute source-order { xsd:nonNegativeInteger }?,
+  attribute legacy-id { text }*
+
+book = element book {
+  common,
+  metadata,
+  source-corpus,
+  source-map,
+  asset*,
+  frontmatter?,
+  bodymatter,
+  backmatter?
+}
+
+metadata = element metadata {
+  element title { text },
+  element author { text }+,
+  element publisher { text }?,
+  element edition { text }?,
+  element isbn { text }?,
+  element license { attribute href { text }, text }?
+}
+
+source-corpus = element source-corpus {
+  attribute url { text },
+  attribute archive-sha256 { text },
+  element source-document {
+    attribute path { text },
+    attribute sha256 { text },
+    attribute size { xsd:nonNegativeInteger }
+  }+
+}
+
+source-map = element source-map {
+  element map-entry {
+    attribute source { text },
+    attribute target { xsd:NMTOKEN },
+    attribute kind { text }
+  }*
+}
+
+asset = element asset {
+  common,
+  attribute href { text },
+  attribute media-type { text },
+  attribute sha256 { text },
+  attribute width { xsd:positiveInteger }?,
+  attribute height { xsd:positiveInteger }?,
+  attribute classification { text }?,
+  attribute status { text }?,
+  element derived-from { attribute href { text } }?
+}
+
+frontmatter = element frontmatter { block* }
+bodymatter = element bodymatter { (part | chapter | block)* }
+backmatter = element backmatter { block* }
+part = element part { common, heading, (chapter | block)* }
+chapter = element chapter { common, heading, (section | block)* }
+section = element section { common, heading, (section | block)* }
+
+block = paragraph | list-block | quotation | exercise | code-block | code-group | repl-session | figure | table | note | source-layout | unclassified | page-break
+
+paragraph = element p { common, inline* }
+heading = element heading { common, attribute level { xsd:positiveInteger }?, inline* }
+
+list-block = element list {
+  common,
+  attribute type { "ordered" | "unordered" }?,
+  item+
+}
+item = element item { common, (inline | block)* }
+
+quotation = element quotation { common, block+ }
+exercise = element exercise { common, attribute number { text }?, heading?, block+ }
+note = element note { common, attribute type { text }?, block+ }
+
+code-block = element code-block {
+  common,
+  attribute role { text }?,
+  attribute language { text }?,
+  (text | code-line)*
+}
+code-line = element code-line { text }
+code-group = element code-group { common, (code-block | paragraph | figure | source-layout)+ }
+repl-session = element repl-session { common, repl-entry+ }
+repl-entry = element repl-entry { common, input, output? }
+input = element input { common, (text | code-line)* }
+output = element output { common, (text | code-line)* }
+
+figure = element figure {
+  common,
+  caption?,
+  image+
+}
+caption = element caption { common, inline* }
+
+table = element table {
+  common,
+  (thead | tbody | tr)+
+}
+thead = element thead { tr+ }
+tbody = element tbody { tr+ }
+tr = element tr { common, (th | td)+ }
+th = element th { common, inline* }
+td = element td { common, (inline | block)* }
+
+source-layout = element source-layout {
+  common,
+  attribute source-element { text }?,
+  (inline | block | raw)*
+}
+unclassified = element unclassified {
+  common,
+  attribute reason { text },
+  attribute source-element { text }?,
+  raw*
+}
+raw = element raw { text }
+page-break = element page-break { common }
+
+inline = text | em | strong | code | quote | xref | footnote-ref | index-term | image | math-image | footnote
+em = element em { common, inline* }
+strong = element strong { common, inline* }
+code = element code { common, text }
+quote = element quote { common, inline* }
+xref = element xref {
+  common,
+  attribute href { text },
+  attribute target { xsd:NMTOKEN }?,
+  attribute type { text }?,
+  inline*
+}
+footnote-ref = element footnote-ref {
+  common,
+  attribute target { xsd:NMTOKEN },
+  text?
+}
+index-term = element index-term { common, attribute target { xsd:NMTOKEN }?, text }
+image = element image {
+  common,
+  attribute href { text },
+  attribute media-type { text }?,
+  attribute alt { text }?
+}
+math-image = element math-image {
+  common,
+  attribute href { text },
+  attribute media-type { text }?,
+  attribute alt { text }?
+}
+footnote = element footnote { common, block+ }

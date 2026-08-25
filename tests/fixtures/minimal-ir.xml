@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<book xmlns="https://progalgo.github.io/sicp/ir/1" xml:id="book">
+  <metadata>
+    <title>Structure and Interpretation of Computer Programs</title>
+    <author>Harold Abelson</author>
+  </metadata>
+  <source-corpus url="https://example.test/sicp.zip" archive-sha256="abc">
+    <source-document path="full-text/book/book.html" sha256="def" size="1"/>
+  </source-corpus>
+  <source-map>
+    <map-entry source="book.html#title" target="title" kind="anchor"/>
+  </source-map>
+  <asset xml:id="asset-1" source-ref="book.html#figure" href="figure.gif" media-type="image/gif" sha256="ghi"/>
+  <frontmatter>
+    <p xml:id="p-front"><em xml:id="em-front">Source-faithful</em> text.</p>
+  </frontmatter>
+  <bodymatter>
+    <chapter xml:id="chapter-1" legacy-id="%_chap_1">
+      <heading xml:id="heading-1" level="1">Building Abstractions</heading>
+      <section xml:id="section-1" legacy-id="%_sec_1.1">
+        <heading xml:id="heading-2" level="2">The Elements of Programming</heading>
+        <p xml:id="p-1" source-ref="book-Z-H-10.html#%_sec_1.1">A <code xml:id="code-inline-1">procedure</code> is a pattern.</p>
+        <code-block xml:id="code-1" language="scheme"><code-line>(define (square x)</code-line><code-line>  (* x x))</code-line></code-block>
+        <repl-session xml:id="repl-1">
+          <repl-entry xml:id="repl-entry-1">
+            <input xml:id="repl-input-1"><code-line>(square 21)</code-line></input>
+            <output xml:id="repl-output-1">441</output>
+          </repl-entry>
+        </repl-session>
+        <figure xml:id="figure-1"><caption xml:id="caption-1">A figure.</caption><image xml:id="image-1" href="figure.gif" media-type="image/gif"/></figure>
+        <exercise xml:id="exercise-1" number="1.1"><heading xml:id="heading-3">Exercise</heading><p xml:id="p-2">Solve this.</p></exercise>
+      </section>
+    </chapter>
+  </bodymatter>
+</book>
