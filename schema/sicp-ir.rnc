@@ -9,6 +9,7 @@ start = book
 
 common =
   attribute xml:id { xsd:NMTOKEN },
+  attribute xml:base { text }?,
   attribute source-ref { text }?,
   attribute source-order { xsd:nonNegativeInteger }?,
   attribute legacy-id { text }*
@@ -63,14 +64,14 @@ asset = element asset {
   element derived-from { attribute href { text } }?
 }
 
-frontmatter = element frontmatter { block* }
+frontmatter = element frontmatter { attribute xml:base { text }?, (section | block)* }
 bodymatter = element bodymatter { (part | chapter | block)* }
-backmatter = element backmatter { block* }
+backmatter = element backmatter { attribute xml:base { text }?, (section | block)* }
 part = element part { common, heading, (chapter | block)* }
 chapter = element chapter { common, heading, (section | block)* }
 section = element section { common, heading, (section | block)* }
 
-block = paragraph | list-block | quotation | exercise | code-block | code-group | repl-session | figure | table | note | source-layout | unclassified | page-break
+block = paragraph | list-block | quotation | exercise | code-block | code-group | repl-session | figure | table | note | source-layout | unclassified | anchor | page-break
 
 paragraph = element p { common, inline* }
 heading = element heading { common, attribute level { xsd:positiveInteger }?, inline* }
@@ -78,7 +79,7 @@ heading = element heading { common, attribute level { xsd:positiveInteger }?, in
 list-block = element list {
   common,
   attribute type { "ordered" | "unordered" }?,
-  item+
+  (anchor | item)+
 }
 item = element item { common, (inline | block)* }
 
@@ -125,15 +126,16 @@ unclassified = element unclassified {
   common,
   attribute reason { text },
   attribute source-element { text }?,
-  raw*
+  (anchor | raw)*
 }
 raw = element raw { text }
+anchor = element anchor { common }
 page-break = element page-break { common }
 
-inline = text | em | strong | code | quote | xref | footnote-ref | index-term | image | math-image | footnote
+inline = text | em | strong | code | quote | xref | footnote-ref | index-term | image | math-image | footnote | anchor
 em = element em { common, inline* }
 strong = element strong { common, inline* }
-code = element code { common, text }
+code = element code { common, (text | em | strong | quote | xref | image | math-image | anchor)* }
 quote = element quote { common, inline* }
 xref = element xref {
   common,
